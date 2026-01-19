@@ -14,7 +14,7 @@
   }
 
   * {
-    @apply border-border;
+    @apply border-gray-200 dark:border-dark-700;
   }
 
   body {
