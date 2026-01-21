@@ -5,56 +5,84 @@ import { ProcessingState } from '@/components/ProcessingState';
 import { ResultCard, Verdict } from '@/components/ResultCard';
 import { ExplainabilityView } from '@/components/ExplainabilityView';
 import { FrameAnalysis } from '@/components/FrameAnalysis';
-import { RefreshCw, Shield } from 'lucide-react';
+import { RefreshCw, Shield, AlertCircle } from 'lucide-react';
+import { apiService } from '@/services/api';
 
-// Mock data for demo purposes
-const mockImageResult = {
-  verdict: 'FAKE' as Verdict,
-  confidence: 87,
-  explanation: 'The model detected subtle inconsistencies in facial texture around the eyes and mouth region. Lighting artifacts and unnatural skin smoothing patterns suggest AI-based generation or manipulation.',
-};
-
-const mockVideoFrames = [
-  { frameNumber: 1, timestamp: '0:02', verdict: 'FAKE' as Verdict, confidence: 82, thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop' },
-  { frameNumber: 2, timestamp: '0:05', verdict: 'FAKE' as Verdict, confidence: 79, thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop' },
-  { frameNumber: 3, timestamp: '0:08', verdict: 'UNCERTAIN' as Verdict, confidence: 54, thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop' },
-  { frameNumber: 4, timestamp: '0:11', verdict: 'FAKE' as Verdict, confidence: 88, thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop' },
-  { frameNumber: 5, timestamp: '0:14', verdict: 'FAKE' as Verdict, confidence: 91, thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop' },
-  { frameNumber: 6, timestamp: '0:17', verdict: 'FAKE' as Verdict, confidence: 85, thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop' },
-];
-
-// Mock heatmap gradient overlay
-const mockHeatmapUrl = 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=800&h=600&fit=crop';
-
-type AnalysisState = 'idle' | 'processing' | 'complete';
+type AnalysisState = 'idle' | 'processing' | 'complete' | 'error';
 type FileType = 'image' | 'video' | null;
+
+interface AnalysisResult {
+  verdict: Verdict;
+  confidence: number;
+  explanation: string;
+  heatmap_url?: string;
+  frames?: Array<{
+    frameNumber: number;
+    timestamp: string;
+    verdict: Verdict;
+    confidence: number;
+    thumbnail: string;
+  }>;
+  file_id?: string;
+}
 
 const Detection = () => {
   const [state, setState] = useState<AnalysisState>('idle');
   const [fileType, setFileType] = useState<FileType>(null);
   const [uploadedUrl, setUploadedUrl] = useState<string>('');
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleFileSelect = (file: File) => {
+  const handleFileSelect = async (file: File) => {
     const isVideo = file.type.startsWith('video/');
     setFileType(isVideo ? 'video' : 'image');
     setUploadedUrl(URL.createObjectURL(file));
+    setUploadedFile(file);
     setState('processing');
+    setError(null);
+    
+    try {
+      let analysisResult;
+      
+      if (isVideo) {
+        analysisResult = await apiService.analyzeVideo(file);
+      } else {
+        analysisResult = await apiService.analyzeImage(file);
+      }
+      
+      if (analysisResult.success) {
+        setResult({
+          verdict: analysisResult.verdict as Verdict,
+          confidence: analysisResult.confidence,
+          explanation: analysisResult.explanation,
+          heatmap_url: analysisResult.heatmap_url,
+          frames: analysisResult.frames,
+          file_id: analysisResult.file_id,
+        });
+        setState('complete');
+      } else {
+        throw new Error('Analysis failed');
+      }
+    } catch (err) {
+      console.error('Analysis error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to analyze file. Please ensure the backend server is running.');
+      setState('error');
+    }
   };
 
-  // Simulate processing
-  useEffect(() => {
-    if (state === 'processing') {
-      const timer = setTimeout(() => {
-        setState('complete');
-      }, 6000); // 6 seconds for demo
-      return () => clearTimeout(timer);
-    }
-  }, [state]);
-
   const handleReset = () => {
+    // Cleanup backend files if needed
+    if (result?.file_id) {
+      apiService.cleanup(result.file_id).catch(console.error);
+    }
+    
     setState('idle');
     setFileType(null);
     setUploadedUrl('');
+    setUploadedFile(null);
+    setResult(null);
+    setError(null);
   };
 
   return (
@@ -90,7 +118,26 @@ const Detection = () => {
               </div>
             )}
 
-            {state === 'complete' && (
+            {state === 'error' && (
+              <div className="py-8 space-y-4">
+                <div className="flex items-center justify-center gap-3 text-destructive">
+                  <AlertCircle className="w-6 h-6" />
+                  <p className="text-lg font-medium">Analysis Failed</p>
+                </div>
+                <p className="text-center text-muted-foreground">{error}</p>
+                <div className="flex justify-center">
+                  <button
+                    onClick={handleReset}
+                    className="flex items-center gap-2 px-6 py-3 rounded-lg bg-secondary hover:bg-accent transition-colors text-sm font-medium text-foreground"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Try Again
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {state === 'complete' && result && (
               <div className="space-y-8">
                 {/* Reset button */}
                 <div className="flex justify-end">
@@ -104,21 +151,25 @@ const Detection = () => {
                 </div>
 
                 {/* Results */}
-                <ResultCard {...mockImageResult} />
+                <ResultCard 
+                  verdict={result.verdict}
+                  confidence={result.confidence}
+                  explanation={result.explanation}
+                />
 
                 {/* Explainability */}
-                {fileType === 'image' && (
+                {fileType === 'image' && result.heatmap_url && (
                   <ExplainabilityView
-                    originalImage={uploadedUrl || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop'}
-                    heatmapImage={mockHeatmapUrl}
+                    originalImage={uploadedUrl}
+                    heatmapImage={result.heatmap_url}
                   />
                 )}
 
                 {/* Video frame analysis */}
-                {fileType === 'video' && (
+                {fileType === 'video' && result.frames && (
                   <FrameAnalysis
-                    frames={mockVideoFrames}
-                    finalVerdict="FAKE"
+                    frames={result.frames}
+                    finalVerdict={result.verdict}
                   />
                 )}
               </div>

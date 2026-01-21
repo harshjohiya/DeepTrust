@@ -1,0 +1,3 @@
+@echo off
+echo Starting DeepTrust Frontend...
+npm run dev
