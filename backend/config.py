@@ -1,5 +1,8 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent
@@ -42,3 +45,12 @@ CORS_ORIGINS = [
     "http://127.0.0.1:8080",
     "http://127.0.0.1:8081",
 ]
+
+# Add production frontend URL from environment
+FRONTEND_URL = os.getenv("FRONTEND_URL")
+if FRONTEND_URL:
+    CORS_ORIGINS.append(FRONTEND_URL)
+
+# Server configuration
+PORT = int(os.getenv("PORT", 8000))
+HOST = os.getenv("HOST", "0.0.0.0")

@@ -211,9 +211,12 @@ async def cleanup_files(file_id: str):
         return {"success": False, "error": str(e)}
 
 if __name__ == "__main__":
+    import multiprocessing
+    multiprocessing.freeze_support()
+    
     uvicorn.run(
-        "app:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True
+        app,
+        host=config.HOST,
+        port=config.PORT,
+        reload=False
     )
