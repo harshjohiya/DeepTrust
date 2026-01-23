@@ -28,21 +28,25 @@ class DeepfakeDetector:
             # Create model architecture
             self.model = timm.create_model(
                 config.MODEL_NAME,
-                pretrained=False,
+                pretrained=True,  # Use pretrained as fallback
                 num_classes=config.NUM_CLASSES
             )
             
             # Load trained weights if they exist
             if config.MODEL_PATH.exists():
-                checkpoint = torch.load(
-                    config.MODEL_PATH,
-                    map_location=self.device
-                )
-                self.model.load_state_dict(checkpoint["model_state_dict"])
-                print(f"✅ Model loaded from {config.MODEL_PATH}")
+                try:
+                    checkpoint = torch.load(
+                        config.MODEL_PATH,
+                        map_location=self.device
+                    )
+                    self.model.load_state_dict(checkpoint["model_state_dict"])
+                    print(f"✅ Model loaded from {config.MODEL_PATH}")
+                except Exception as load_err:
+                    print(f"⚠️ Error loading model weights: {load_err}")
+                    print("   Using pretrained model instead")
             else:
                 print(f"⚠️ Warning: Model weights not found at {config.MODEL_PATH}")
-                print("   Using untrained model. Please place your trained model in backend/models/")
+                print("   Using pretrained model. Upload your trained model for better accuracy.")
             
             self.model = self.model.to(self.device)
             self.model.eval()

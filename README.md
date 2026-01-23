@@ -1,3 +1,13 @@
+---
+title: DeepTrust Backend
+emoji: 🔍
+colorFrom: blue
+colorTo: purple
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 <div align="center">
 
 # 🛡️ DeepTrust: Deepfake Detection with Explainable AI

@@ -44,6 +44,7 @@ CORS_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8080",
     "http://127.0.0.1:8081",
+    "https://deeptrust1.vercel.app",
 ]
 
 # Add production frontend URL from environment
@@ -52,5 +53,5 @@ if FRONTEND_URL:
     CORS_ORIGINS.append(FRONTEND_URL)
 
 # Server configuration
-PORT = int(os.getenv("PORT", 8000))
+PORT = int(os.getenv("PORT", 7860))
 HOST = os.getenv("HOST", "0.0.0.0")
