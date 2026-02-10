@@ -147,8 +147,11 @@ export const UploadZone = ({ onFileSelect, isProcessing }: UploadZoneProps) => {
           <p className="text-lg font-medium text-foreground mb-1">
             Drop your file here
           </p>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-sm text-muted-foreground mb-2">
             or click to browse
+          </p>
+          <p className="text-xs text-muted-foreground/80 mb-4 max-w-md text-center">
+            Upload face crop images or videos for deepfake detection analysis
           </p>
           
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
