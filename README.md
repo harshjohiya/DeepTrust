@@ -1,43 +1,42 @@
 
 <div align="center">
 
-# 🛡️ DeepTrust: Deepfake Detection with Explainable AI
+# DeepTrust: Deepfake Detection with Explainable AI
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.1-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![License](https://img.shields.io/badge/License-Research-green.svg)](LICENSE)
 
-**An end-to-end AI-powered system for detecting deepfakes with explainable predictions**
+**AI-powered deepfake detection system with explainable predictions**
 
-[Features](#-key-features) • [Architecture](#-system-architecture) • [Installation](#-installation-and-setup) • [API Docs](#-api-endpoints) • [Results](#-visual-results)
+[Features](#key-features) • [Architecture](#system-architecture) • [Installation](#installation-and-setup) • [API](#api-endpoints)
 
 </div>
 
 ---
 
-## 🎯 Problem Statement
+## Overview
 
-The proliferation of AI-generated and manipulated media poses significant threats to information integrity, personal security, and public trust. DeepTrust addresses this challenge by providing:
+DeepTrust provides automated detection of AI-generated and manipulated media through:
 
-- 🤖 **Automated Detection**: Fast, scalable analysis of images and videos
-- 🔍 **Transparency**: Explainable predictions through visual heatmaps
-- ⚖️ **Conservative Classification**: Uncertainty handling to minimize false confidence
-- 🛡️ **AI Safety**: Ethical design prioritizing user protection over classification accuracy
+- **Automated Detection**: Fast analysis of images and videos
+- **Explainable AI**: Visual heatmaps showing decision-relevant regions
+- **Conservative Classification**: Three-tier system (REAL, FAKE, UNCERTAIN) to handle ambiguity
+- **Ethical Design**: Prioritizes user protection and transparency
 
-## ✨ Key Features
+## Key Features
 
-- 📸 **Multi-Modal Analysis**: Support for both image and video deepfake detection
-- 👤 **Face-Centric Processing**: Automatic face extraction and cropping using MediaPipe
-- 📊 **Confidence-Based Predictions**: Three-tier classification (REAL, FAKE, UNCERTAIN) with probability scores
-- 🎨 **Explainable AI**: Grad-CAM visualizations highlighting decision-relevant facial regions
-- 🎬 **Video-Level Inference**: Frame sampling and aggregation for temporal consistency
-- ⚡ **Production-Ready API**: FastAPI backend with RESTful endpoints
-- 💻 **Modern Web Interface**: React-based frontend for interactive analysis
+- **Multi-Modal Analysis**: Image and video deepfake detection
+- **Face-Centric Processing**: Automatic face extraction using MediaPipe
+- **Confidence-Based Predictions**: REAL, FAKE, or UNCERTAIN classification with probability scores
+- **Grad-CAM Visualizations**: Highlights facial regions influencing decisions
+- **Video-Level Inference**: Frame sampling with aggregation for temporal consistency
+- **Production-Ready API**: FastAPI backend with RESTful endpoints
+- **Modern Web Interface**: React-based frontend
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```mermaid
 flowchart TD
@@ -67,128 +66,117 @@ flowchart TD
     style O fill:#2196F3
 ```
 
-### 🔧 Pipeline Components
+### Pipeline Components
 
-1. 👁️ **Face Detection**: MediaPipe Face Detection (model selection: 1, confidence: 0.5)
-2. 🔄 **Preprocessing**: Resize to 224×224, ImageNet normalization
-3. 🧠 **Model**: EfficientNet-B0 pretrained on ImageNet, fine-tuned on deepfake data
-4. 📈 **Inference**: Softmax probabilities with confidence thresholding
-5. 🎯 **Explainability**: Grad-CAM targeting final convolutional layer
-6. 🎥 **Video Processing**: Uniform frame sampling (5-6 frames), majority voting
+1. **Face Detection**: MediaPipe Face Detection (model selection: 1, confidence: 0.5)
+2. **Preprocessing**: Resize to 224×224, ImageNet normalization
+3. **Model**: EfficientNet-B0 pretrained on ImageNet, fine-tuned on deepfake data
+4. **Inference**: Softmax probabilities with confidence thresholding
+5. **Explainability**: Grad-CAM targeting final convolutional layer
+6. **Video Processing**: Uniform frame sampling (5-6 frames), majority voting
 
-## 📚 Dataset
+## Dataset
 
-### 🎭 Celeb-DF v2
+### Celeb-DF v2
 
-> DeepTrust is trained on the **Celeb-DF (Celeb Deep Fake) v2** dataset, a high-quality benchmark for deepfake detection research.
+DeepTrust is trained on the **Celeb-DF (Celeb Deep Fake) v2** dataset, a high-quality benchmark for deepfake detection research.
 
-**📊 Dataset Characteristics:**
-- ✅ **Real Videos**: Celebrity interviews and public appearances
-- ❌ **Fake Videos**: High-quality face-swap deepfakes generated using advanced synthesis techniques
-- 🔀 **Split Strategy**: Video-level splitting to prevent data leakage
-  - 🏋️ Training: **70%**
-  - ✔️ Validation: **15%**
-  - 🧪 Test: **15%**
+**Dataset Characteristics:**
+- **Real Videos**: Celebrity interviews and public appearances
+- **Fake Videos**: High-quality face-swap deepfakes
+- **Split Strategy**: Video-level splitting to prevent data leakage
+  - Training: 70%
+  - Validation: 15%
+  - Test: 15%
 
 **Preprocessing:**
 - 5 frames uniformly sampled per video
 - Faces extracted and cropped using MediaPipe
 - Resized to 224×224 for model input
 
-**Usage**: This dataset is used for research and educational purposes only, in compliance with the dataset's terms of use.
+## Model Architecture and Training
 
-## 🧠 Model Architecture and Training
-
-### 🎯 Model
+### Model Configuration
 
 | Component | Details |
 |-----------|--------|
-| 🏗️ **Architecture** | EfficientNet-B0 |
-| ⚙️ **Framework** | PyTorch |
-| 🎓 **Pretrained Weights** | ImageNet |
-| 🔧 **Fine-tuning** | Full model fine-tuning on deepfake data |
+| **Architecture** | EfficientNet-B0 |
+| **Framework** | PyTorch |
+| **Pretrained Weights** | ImageNet |
+| **Fine-tuning** | Full model fine-tuning on deepfake data |
 
-### ⚡ Training Configuration
+### Training Configuration
 
-- **Loss Function**: Weighted Cross-Entropy Loss
-  - Applied class weighting to handle real/fake imbalance
-  - Weight calculation: `w_real = num_fake / num_real`
+- **Loss Function**: Weighted Cross-Entropy Loss (class weighting to handle imbalance)
 - **Optimizer**: Adam (learning rate: 1e-4)
 - **Batch Size**: 32
 - **Epochs**: 10
 - **Data Augmentation**: Random horizontal flip
-- **Normalization**: ImageNet statistics (mean: [0.485, 0.456, 0.406], std: [0.229, 0.224, 0.225])
+- **Normalization**: ImageNet statistics
 
 ### Training Strategy
 
 **Face-Level Training**: Model trained on individual face crops extracted from video frames.
 
-**Video-Level Inference**: During evaluation, multiple frames are sampled from each video, and predictions are aggregated using majority voting to determine the final video-level classification.
-
-This approach improves robustness by leveraging temporal information and reducing the impact of individual frame anomalies.
+**Video-Level Inference**: Multiple frames sampled from each video, predictions aggregated using majority voting for final video-level classification. This improves robustness by leveraging temporal information.
 
 ## Evaluation Results
 
 ### Test Set Performance
 
 - **Test Accuracy**: ~91-92%
-- **Fake Detection Recall**: ~93% (prioritizes catching manipulated content)
-- **Real Detection Precision**: ~90% (minimizes false alarms)
+- **Fake Detection Recall**: ~93%
+- **Real Detection Precision**: ~90%
 
 ### Classification Strategy
 
-The model employs a **conservative uncertainty threshold**:
-- **FAKE**: Confidence > 65% toward fake class
-- **REAL**: Confidence > 65% toward real class
-- **UNCERTAIN**: Confidence between 45-65%
+Conservative uncertainty threshold:
+- **FAKE**: Confidence > 65%
+- **REAL**: Confidence > 65%
+- **UNCERTAIN**: Confidence 45-65%
 
-This design philosophy prioritizes AI safety by explicitly flagging ambiguous cases rather than forcing overconfident predictions.
+This prioritizes AI safety by flagging ambiguous cases rather than forcing overconfident predictions.
 
-### Strengths
+### Strengths & Limitations
 
+**Strengths:**
 - Strong performance on high-quality deepfakes
 - Effective face extraction and preprocessing
 - Robust to lighting and pose variations
 
-### Limitations
-
-- Performance degrades on low-resolution or heavily compressed media
-- Limited to single-face scenarios in current implementation
+**Limitations:**
+- Performance degrades on low-resolution or compressed media
+- Limited to single-face scenarios
 - May struggle with adversarial perturbations
-- Dataset-specific biases (Celeb-DF characteristics)
+- Dataset-specific biases
 
 ## Explainability: Grad-CAM Visualization
 
 ### What is Grad-CAM?
 
-Gradient-weighted Class Activation Mapping (Grad-CAM) is a visual explanation technique that highlights which regions of an image most influenced the model's decision.
+Gradient-weighted Class Activation Mapping (Grad-CAM) highlights which image regions most influenced the model's decision.
 
-**How it works:**
-1. Compute gradients of the predicted class with respect to the final convolutional layer
-2. Weight feature maps by their importance
-3. Generate a heatmap overlay showing decision-relevant regions
+**Process:**
+1. Compute gradients of predicted class w.r.t. final convolutional layer
+2. Weight feature maps by importance
+3. Generate heatmap overlay showing decision-relevant regions
 
 ### Why Explainability Matters
 
-In AI safety applications, **trust requires transparency**. Grad-CAM provides:
+In AI safety applications, trust requires transparency. Grad-CAM provides:
 
-- **Verification**: Confirms the model focuses on facial features, not background artifacts
-- **Debugging**: Identifies when the model relies on spurious correlations
-- **User Trust**: Allows non-experts to understand predictions
-- **Accountability**: Enables auditing of model behavior
+- **Verification**: Confirms model focuses on facial features, not background artifacts
+- **Debugging**: Identifies spurious correlations
+- **User Trust**: Enables non-expert understanding
+- **Accountability**: Enables model behavior auditing
 
 ### Interpretation
 
-**Fake Predictions**: Heatmaps typically highlight:
-- Unnatural skin texture smoothing
-- Boundary artifacts around eyes and mouth
-- Lighting inconsistencies in facial regions
+**Fake Predictions**: Heatmaps typically highlight unnatural skin texture, boundary artifacts around eyes/mouth, and lighting inconsistencies.
 
-**Real Predictions**: Heatmaps show:
-- Consistent attention across natural facial features
-- No localized anomalies or discontinuities
+**Real Predictions**: Consistent attention across natural facial features with no localized anomalies.
 
-## 📊 Visual Results
+## Visual Results
 
 <div align="center">
 
@@ -199,42 +187,39 @@ In AI safety applications, **trust requires transparency**. Grad-CAM provides:
     <td align="center" width="50%">
       <img src="Result/Fake.png" alt="Fake Detection" width="400"/>
       <br/>
-      <b>🚫 FAKE Detection</b>
+      <b>FAKE Detection</b>
       <br/>
-      <em>The Grad-CAM heatmap highlights manipulation artifacts around facial features, indicating synthetic content with high confidence.</em>
+      <em>Grad-CAM highlights manipulation artifacts around facial features</em>
     </td>
     <td align="center" width="50%">
       <img src="Result/Real.png" alt="Real Detection" width="400"/>
       <br/>
-      <b>✅ REAL Detection</b>
+      <b>REAL Detection</b>
       <br/>
-      <em>Natural facial features with consistent attention patterns across the face, confirming authentic content.</em>
+      <em>Natural facial features with consistent attention patterns</em>
     </td>
   </tr>
 </table>
 
-*The heatmaps overlay shows which regions influenced the model's decision, providing transparency and interpretability.*
-
 </div>
 
-## 🚀 Installation and Setup
+## Installation and Setup
 
-### 📋 Prerequisites
+### Prerequisites
 
-- 🐍 Python 3.8+
-- 📦 Node.js 16+ (for frontend)
-- 🎮 CUDA-capable GPU (optional, for faster inference)
+- Python 3.8+
+- Node.js 16+
+- CUDA GPU (optional, for faster inference)
 
-### 🔧 Backend Setup
+### Backend Setup
 
 ```bash
-# Navigate to project directory
+# Navigate to backend directory
 cd DeepTrust/backend
 
-# Create virtual environment
+# Create and activate virtual environment
 python -m venv venv
 
-# Activate virtual environment
 # Windows:
 .\venv\Scripts\activate
 # Linux/Mac:
@@ -244,7 +229,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 💻 Frontend Setup
+### Frontend Setup
 
 ```bash
 # Navigate to project root
@@ -254,52 +239,44 @@ cd DeepTrust
 npm install
 ```
 
-### 🎯 Model Weights
+### Model Weights
 
-> ⚠️ **Important**: Place your trained model file at:
-```
-backend/models/best_efficientnet_b0.pth
-```
+Place trained model file at: `backend/models/best_efficientnet_b0.pth`
 
-**Model file structure:**
-- 📦 `model_state_dict`: EfficientNet-B0 state dictionary
-- 🔧 `optimizer_state_dict`: Optimizer state (optional for inference)
+## Running the Application
 
-## ▶️ Running the Application
-
-### 🖥️ Start Backend Server
+### Start Backend Server
 
 ```bash
 cd backend
 python app.py
 ```
 
-✅ Backend will run on: `http://localhost:8000`  
-📖 API Documentation: `http://localhost:8000/docs`
+Backend runs on: `http://localhost:8000`  
+API Documentation: `http://localhost:8000/docs`
 
-### 🌐 Start Frontend Server
+### Start Frontend Server
 
 ```bash
 npm run dev
 ```
 
-✅ Frontend will run on: `http://localhost:5173` (or next available port)
+Frontend runs on: `http://localhost:5173`
 
-### 📱 Using the Application
+### Using the Application
 
-1. 🌐 **Navigate** to the frontend URL in your browser
-2. 📤 **Upload** an image (JPG, PNG) or video (MP4)
-3. ⏳ **Wait** for processing (typically 1-3 seconds for images, 5-10 seconds for videos)
-4. 📊 **Review** the prediction result:
-   - ✅/❌ **Verdict**: REAL, FAKE, or UNCERTAIN
-   - 📈 **Confidence score**: 0-100%
-   - 💬 **Explanation**: Natural language interpretation
-   - 🎨 **Grad-CAM heatmap**: Visual explanation (for images)
-   - 🎬 **Frame analysis**: Per-frame results (for videos)
+1. Navigate to frontend URL in browser
+2. Upload image (JPG, PNG) or video (MP4)
+3. Wait for processing (1-3s for images, 5-10s for videos)
+4. Review results:
+   - Verdict: REAL, FAKE, or UNCERTAIN
+   - Confidence score: 0-100%
+   - Explanation text
+   - Grad-CAM heatmap (for images)
+   - Frame analysis (for videos)
+### API Endpoints
 
-### 📡 API Endpoints
-
-#### 📸 Image Analysis
+#### Image Analysis
 ```http
 POST /api/analyze/image
 Content-Type: multipart/form-data
@@ -319,7 +296,7 @@ Response:
 }
 ```
 
-#### 🎥 Video Analysis
+#### Video Analysis
 ```http
 POST /api/analyze/video
 Content-Type: multipart/form-data
@@ -331,122 +308,113 @@ Response:
   "verdict": "FAKE",
   "confidence": 85.3,
   "explanation": "...",
-  "frames": [
-    {
-      "frameNumber": 1,
-      "timestamp": "0:02",
-      "verdict": "FAKE",
-      "confidence": 82.5,
-      "thumbnail": "data:image/jpeg;base64,..."
-    },
-    ...
-  ],
+  "frames": [...],
   "total_frames": 6
 }
 ```
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 <table>
 <tr>
 <td width="33%" valign="top">
 
-### ⚙️ Backend
-- ⚡ **FastAPI**: Modern async web framework
-- 🔥 **PyTorch**: Deep learning framework
-- 🎯 **timm**: EfficientNet implementation
-- 📹 **OpenCV**: Video processing
-- 👤 **MediaPipe**: Face detection
-- 🎨 **Grad-CAM**: Explainability visualization
+### Backend
+- **FastAPI**: Web framework
+- **PyTorch**: Deep learning
+- **timm**: EfficientNet implementation
+- **OpenCV**: Video processing
+- **MediaPipe**: Face detection
+- **Grad-CAM**: Explainability
 
 </td>
 <td width="33%" valign="top">
 
-### 💻 Frontend
-- ⚛️ **React 18**: UI framework
-- 📘 **TypeScript**: Type-safe development
-- 🎨 **Tailwind CSS**: Utility-first styling
-- ⚡ **Vite**: Fast build tool
+### Frontend
+- **React 18**: UI framework
+- **TypeScript**: Type safety
+- **Tailwind CSS**: Styling
+- **Vite**: Build tool
 
 </td>
 <td width="33%" valign="top">
 
-### 🧠 Model
-- 🏗️ **EfficientNet-B0**: CNN architecture
-- 🔥 **PyTorch 2.1**: Deep learning inference
-- 🎮 **CUDA**: GPU acceleration (optional)
+### Model
+- **EfficientNet-B0**: CNN architecture
+- **PyTorch 2.1**: Inference engine
+- **CUDA**: GPU acceleration
 
 </td>
 </tr>
 </table>
 
-## ⚖️ Ethical Considerations
+## Ethical Considerations
 
-### 🔒 Privacy and Safety
+### Privacy and Safety
 
-- 🚫 **No Biometric Storage**: Faces are processed in memory and immediately discarded
-- 🕵️ **No Identity Tracking**: The system detects manipulation, not identity
-- 🏠 **Local Processing**: All inference happens server-side; no data is sent to third parties
+- No biometric storage: Faces processed in memory and discarded
+- No identity tracking: System detects manipulation, not identity
+- Local processing: All inference server-side, no third-party data sharing
 
-### 📚 Dataset Usage
+### Dataset Usage
 
-- 🎭 The Celeb-DF dataset is used strictly for research and educational purposes
-- ⛔ No commercial deployment without proper licensing
-- ✅ Compliance with dataset terms of use and applicable regulations
+- Celeb-DF dataset for research and educational purposes only
+- No commercial deployment without proper licensing
+- Compliance with dataset terms and regulations
 
-### ⚠️ Limitations and Risks
+### Limitations and Risks
 
-**🚧 Known Limitations:**
-- ❌ False negatives on sophisticated deepfakes
-- ⚠️ False positives on heavily edited but authentic media
-- 📉 Performance degrades on out-of-distribution data
-- 🛡️ Vulnerable to adversarial attacks
+**Known Limitations:**
+- False negatives on sophisticated deepfakes
+- False positives on heavily edited authentic media
+- Performance degrades on out-of-distribution data
+- Vulnerable to adversarial attacks
 
-**🚨 Misuse Risks:**
-- ⚠️ Deepfake detection is not foolproof and should not be the sole basis for critical decisions
-- 🎭 Adversaries may develop detection-resistant deepfakes
-- 🔴 Overreliance on automated systems may create false sense of security
+**Misuse Risks:**
+- Not foolproof; should not be sole basis for critical decisions
+- Adversaries may develop detection-resistant deepfakes
+- Overreliance may create false sense of security
 
-**✅ Recommended Usage:**
-- 🔍 Use as one component in a multi-layered verification strategy
-- 🔗 Combine with metadata analysis, source verification, and human review
-- 🔄 Update models regularly as deepfake techniques evolve
+**Recommended Usage:**
+- Use as one component in multi-layered verification
+- Combine with metadata analysis and human review
+- Update models regularly as deepfake techniques evolve
 
-## 🚀 Future Improvements
+## Future Improvements
 
-### 🔧 Technical Enhancements
-- 👥 **Multi-Face Support**: Detect and analyze multiple faces per frame
-- ⏱️ **Temporal Modeling**: LSTM/Transformer architectures for video analysis
-- 🛡️ **Adversarial Robustness**: Training with adversarial examples
-- 📦 **Model Compression**: Quantization and pruning for edge deployment
+### Technical Enhancements
+- Multi-face detection and analysis
+- LSTM/Transformer architectures for temporal video analysis
+- Adversarial robustness training
+- Model compression for edge deployment
 
-### ✨ Feature Additions
-- 📤 **Batch Processing**: Analyze multiple files concurrently
-- 🎤 **Audio Analysis**: Voice deepfake detection
-- 📸 **Metadata Forensics**: EXIF and compression artifact analysis
-- 🔒 **API Rate Limiting**: Production-grade deployment safeguards
+### Feature Additions
+- Batch processing for multiple files
+- Audio deepfake detection
+- Metadata forensics and EXIF analysis
+- API rate limiting for production deployment
 
-### 🔬 Research Directions
-- 🌍 **Cross-Dataset Generalization**: Training on multiple deepfake datasets
-- 🎯 **Zero-Shot Detection**: Detecting novel manipulation techniques
-- 📊 **Uncertainty Quantification**: Bayesian deep learning for confidence calibration
-- 💡 **Interpretability**: Beyond Grad-CAM, exploring attention mechanisms
+### Research Directions
+- Cross-dataset generalization
+- Zero-shot detection for novel manipulation techniques
+- Bayesian uncertainty quantification
+- Advanced interpretability beyond Grad-CAM
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please follow these guidelines:
 
-1. 🍴 Fork the repository
-2. 🌱 Create a feature branch (`git checkout -b feature/YourFeature`)
-3. ✅ Commit your changes (`git commit -m 'Add YourFeature'`)
-4. 🚀 Push to the branch (`git push origin feature/YourFeature`)
-5. 📩 Open a Pull Request
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/YourFeature`)
+3. Commit your changes (`git commit -m 'Add YourFeature'`)
+4. Push to the branch (`git push origin feature/YourFeature`)
+5. Open a Pull Request
 
-## 📜 License
+## License
 
-This project is for **educational and research purposes**. Please ensure compliance with dataset licenses and applicable laws before any commercial use.
+This project is for **educational and research purposes**. Ensure compliance with dataset licenses and applicable laws before commercial use.
 
-## 📝 Citation
+## Citation
 
 If you use DeepTrust in your research, please cite:
 
@@ -459,14 +427,14 @@ If you use DeepTrust in your research, please cite:
 }
 ```
 
-## 🌟 Acknowledgments
+## Acknowledgments
 
-- 📚 **Celeb-DF Dataset**: Li et al., "Celeb-DF: A Large-scale Challenging Dataset for DeepFake Forensics"
-- 🧠 **EfficientNet**: Tan and Le, "EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks"
-- 🎨 **Grad-CAM**: Selvaraju et al., "Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization"
-- 👤 **MediaPipe**: Google Research, MediaPipe Face Detection
+- **Celeb-DF Dataset**: Li et al., "Celeb-DF: A Large-scale Challenging Dataset for DeepFake Forensics"
+- **EfficientNet**: Tan and Le, "EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks"
+- **Grad-CAM**: Selvaraju et al., "Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization"
+- **MediaPipe**: Google Research, MediaPipe Face Detection
 
-## 📧 Contact
+## Contact
 
 For questions, issues, or collaboration opportunities, please open an issue on GitHub or contact [johiyaharsh@gmail.com].
 
@@ -474,9 +442,7 @@ For questions, issues, or collaboration opportunities, please open an issue on G
 
 <div align="center">
 
-**⚠️ Disclaimer**: This tool is designed for research and educational purposes. Deepfake detection is an active area of research with ongoing challenges. Always verify critical information through multiple independent sources.
-
-**Made with ❤️ for AI Safety and Digital Trust**
+**Disclaimer**: This tool is designed for research and educational purposes. Deepfake detection is an active area of research with ongoing challenges. Always verify critical information through multiple independent sources.
 
 </div>
 
